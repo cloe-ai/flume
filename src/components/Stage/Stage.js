@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./Stage.css";
+import styles from "./Stage.module.scss";
 import { Portal } from "react-portal";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import { NodeTypesContext, NodeDispatchContext } from "../../context";

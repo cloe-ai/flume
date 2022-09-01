@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./Node.css";
+import styles from "./Node.module.css";
 import {
   NodeTypesContext,
   NodeDispatchContext,

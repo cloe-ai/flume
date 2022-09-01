@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./Comment.css";
+import styles from "./Comment.module.scss";
 import Draggable from "../Draggable/Draggable";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import ColorPicker from "../ColorPicker/ColorPicker";

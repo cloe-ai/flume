@@ -1,8 +1,8 @@
 import React from "react";
-import selectStyles from "../Select/Select.css";
+import selectStyles from "../Select/Select.module.scss";
 import { Portal } from "react-portal";
 import ContextMenu from "../ContextMenu/ContextMenu";
-import styles from "./Select.css";
+import styles from "./Select.module.scss";
 
 const MAX_LABEL_LENGTH = 50;
 

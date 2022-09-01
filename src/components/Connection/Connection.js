@@ -1,6 +1,6 @@
 import React from "react";
 import {calculateCurve} from '../../connectionCalculator'
-import styles from "./Connection.css";
+import styles from "./Connection.module.css";
 
 const Connection = ({
   from,

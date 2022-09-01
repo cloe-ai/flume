@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./Toaster.css";
+import styles from "./Toaster.module.scss";
 
 export default ({ toasts = [], dispatchToasts }) => {
   const setHeight = React.useCallback(

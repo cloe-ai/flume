@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./IoPorts.css";
+import styles from "./IoPorts.module.scss";
 import { Portal } from "react-portal";
 import {
   NodeDispatchContext,

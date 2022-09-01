@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./ColorPicker.css";
+import styles from "./ColorPicker.module.scss";
 import { Colors } from "../../typeBuilders";
 
 export default ({ x, y, onColorPicked, onRequestClose }) => {
