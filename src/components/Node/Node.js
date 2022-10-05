@@ -99,7 +99,7 @@ const Node = ({
                 stageRect.current.height / 2
             ) + byScale(stageState.translate.y)
         };
-        cnx.setAttribute("d", calculateCurve(from, to));
+        cnx && cnx.setAttribute("d", calculateCurve(from, to));
       });
     });
   };
@@ -156,6 +156,12 @@ const Node = ({
         return;
     }
   };
+
+  React.useEffect(() => {
+    if (stageRect.current) {
+      updateNodeConnections();
+    }
+  });
 
   return (
     <Draggable

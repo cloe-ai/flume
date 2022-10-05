@@ -32,7 +32,7 @@ import styles from "./styles.module.css";
 
 const defaultContext = {};
 
-export let NodeEditor = (
+let Editor = (
   {
     comments: initialComments = undefined,
     nodes: initialNodes = undefined,
@@ -51,7 +51,7 @@ export let NodeEditor = (
     circularBehavior = undefined,
     renderNodeHeader = undefined,
     debug = undefined,
-    ref: editorRef = undefined
+    broadcast = (_) => {}
   },
   ref
 ) => {
@@ -64,7 +64,8 @@ export let NodeEditor = (
     connectNodesReducer(
       nodesReducer,
       { nodeTypes, portTypes, cache, circularBehavior, context },
-      setSideEffectToasts
+      setSideEffectToasts,
+      broadcast
     ),
     {},
     () => getInitialNodes(initialNodes, defaultNodes, nodeTypes, portTypes, context)
@@ -73,9 +74,11 @@ export let NodeEditor = (
     commentsReducer,
     initialComments || {}
   );
+  /*
   React.useEffect(() => {
     dispatchNodes({ type: "HYDRATE_DEFAULT_NODES" });
   }, []);
+  */
   const [
     shouldRecalculateConnections,
     setShouldRecalculateConnections
@@ -112,6 +115,13 @@ export let NodeEditor = (
     },
     getComments: () => {
       return comments;
+    },
+    redraw: nodes => {
+      dispatchNodes({ type: "REDRAW_EVERYTHING", nodes })
+      triggerRecalculation()
+    },
+    updateAction: (action) => {
+      dispatchNodes({ ...action, broadcast: () => {}})
     }
   }));
 
@@ -232,7 +242,7 @@ export let NodeEditor = (
     </PortTypesContext.Provider>
   );
 };
-NodeEditor = React.forwardRef(NodeEditor);
+export const NodeEditor = React.forwardRef(Editor);
 export { FlumeConfig, Controls, Colors } from "./typeBuilders";
 export { RootEngine } from "./RootEngine";
 export const useRootEngine = (nodes, engine, context, options = {}) =>

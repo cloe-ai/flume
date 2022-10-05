@@ -1,9 +1,17 @@
 import {
-  deleteConnection,
-  deleteConnectionsByNodeId
+  deleteConnection as deleteConnectionClient,
+  deleteConnectionsByNodeId as deleteConnectionsByNodeIdClient
 } from "./connectionCalculator";
 import { checkForCircularNodes } from "./utilities";
 import {nanoid} from "nanoid/non-secure";
+
+let deleteConnection = () => {}
+let deleteConnectionsByNodeId = () => {}
+
+if (global.window !== undefined) {
+  deleteConnection = deleteConnectionClient
+  deleteConnectionsByNodeId = deleteConnectionsByNodeIdClient
+}
 
 const addConnection = (nodes, input, output, portTypes) => {
   const newNodes = {
@@ -228,8 +236,10 @@ const nodesReducer = (
   nodes,
   action = {},
   { nodeTypes, portTypes, cache, circularBehavior, context },
-  dispatchToasts
+  dispatchToasts,
+  broadcast = () => {}
 ) => {
+  broadcast = action.broadcast || broadcast
   switch (action.type) {
     case "ADD_CONNECTION": {
       const { input, output } = action;
@@ -259,6 +269,7 @@ const nodesReducer = (
               duration: 5000
             });
           }
+          broadcast(action);
           return newNodes;
         }
       } else return nodes;
@@ -270,6 +281,7 @@ const nodesReducer = (
         output.nodeId + output.portName + input.nodeId + input.portName;
       delete cache.current.connections[id];
       deleteConnection({ id });
+      broadcast(action);
       return removeConnection(nodes, input, output);
     }
 
@@ -282,6 +294,7 @@ const nodesReducer = (
       const connections = nodes[transput.nodeId].connections[cnxType][transput.portName];
       if (!connections || !connections.length) return nodes;
 
+      broadcast(action);
       return connections.reduce((nodes, cnx) => {
         const [input, output] = transputType === 'input' ? [transput, cnx] : [cnx, transput];
         const id = output.nodeId + output.portName + input.nodeId + input.portName;
@@ -318,14 +331,17 @@ const nodesReducer = (
       if (nodeTypes[nodeType].root) {
         newNode.root = true;
       }
-      return {
+      const newNodes = {
         ...nodes,
         [newNodeId]: newNode
       };
+      broadcast({...action, id: newNodeId, validNodes: Object.keys(newNodes)});
+      return newNodes;
     }
 
     case "REMOVE_NODE": {
       const { nodeId } = action;
+      broadcast(action);
       return removeNode(nodes, nodeId);
     }
 
@@ -339,6 +355,7 @@ const nodesReducer = (
           delete newNodes[key];
         }
       }
+      broadcast(action);
       return newNodes;
     }
 
@@ -354,6 +371,7 @@ const nodesReducer = (
       if (setValue) {
         newData = setValue(newData, nodes[nodeId].inputData);
       }
+      broadcast(action);
       return {
         ...nodes,
         [nodeId]: {
@@ -365,6 +383,7 @@ const nodesReducer = (
 
     case "SET_NODE_COORDINATES": {
       const { x, y, nodeId } = action;
+      broadcast(action);
       return {
         ...nodes,
         [nodeId]: {
@@ -375,14 +394,21 @@ const nodesReducer = (
       };
     }
 
+    case "REDRAW_EVERYTHING": {
+      action.nodes = action.nodes || { ...nodes };
+      Object.values(nodes).forEach(node => deleteConnectionsByNodeId(node.id));
+      // do not broadcast
+      return getInitialNodes(action.nodes, [], nodeTypes, portTypes, context);
+    }
+
     default:
       return nodes;
   }
 };
 
-export const connectNodesReducer = (reducer, environment, dispatchToasts) => (
+export const connectNodesReducer = (reducer, environment, dispatchToasts, broadcast) => (
   state,
   action
-) => reducer(state, action, environment, dispatchToasts);
+) => reducer(state, action, environment, dispatchToasts, broadcast);
 
 export default nodesReducer;
