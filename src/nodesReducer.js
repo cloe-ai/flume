@@ -123,8 +123,8 @@ const reconcileNodes = (initialNodes, nodeTypes, portTypes, context) => {
   let nodes = { ...initialNodes };
 
   // Delete extraneous nodes
-  let nodesToDelete = Object.values(nodes)
-    .map(node => (!nodeTypes[node.type] ? node.id : undefined))
+  let nodesToDelete = Object.entries(nodes)
+    .map(([id,node]) => (!nodeTypes[node.type] ? id : undefined))
     .filter(x => x);
 
   nodesToDelete.forEach(nodeId => {
