@@ -52,6 +52,7 @@ const Node = ({
           isOutput ? "input" : "output",
           cache
         );
+        if (!toRect || !fromRect) return;
         const portHalf = fromRect.width / 2;
         let combined;
         if (isOutput) {
