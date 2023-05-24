@@ -1,7 +1,7 @@
 export const checkForCircularNodes = (nodes, startNodeId) => {
   let isCircular = false;
   const walk = nodeId => {
-    const outputs = Object.values(nodes[nodeId].connections.outputs);
+    const outputs = nodes[nodeId] && Object.values(nodes[nodeId].connections.outputs) || [];
     for (var i = 0; i < outputs.length; i++) {
       if(isCircular){
         break;
